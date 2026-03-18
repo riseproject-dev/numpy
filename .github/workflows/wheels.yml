@@ -59,7 +59,7 @@ jobs:
         if: matrix.buildplat[1] == 'manylinux_riscv64'
         run: |
           echo "/opt/python-3.12/bin" >> "$GITHUB_PATH"
-          /opt/python-3.12/bin/python3.12 -m pip install cibuildwheel==2.23.3
+          /opt/python-3.12/bin/python3.12 -m pip install cibuildwheel==3.4.0
 
       - name: Setup MSVC (32-bit)
         if: ${{ matrix.buildplat[1] == 'win32' }}
