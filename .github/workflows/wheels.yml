@@ -58,20 +58,8 @@ jobs:
       - name: Setup Python for riscv64
         if: matrix.buildplat[1] == 'manylinux_riscv64'
         run: |
-          # Find a working Python 3 on the RISE runner
-          for py in /opt/python-3.12/bin/python3 /opt/python-3.12/bin/python3.12 /opt/python-3.11/bin/python3 /opt/python-3.13/bin/python3; do
-            if [ -x "$py" ]; then
-              PYTHON="$py"
-              break
-            fi
-          done
-          if [ -z "$PYTHON" ]; then
-            PYTHON=$(which python3 2>/dev/null || which python 2>/dev/null)
-          fi
-          echo "Using Python: $PYTHON"
-          ls -la "$(dirname "$PYTHON")/"
-          echo "$(dirname "$PYTHON")" >> "$GITHUB_PATH"
-          "$PYTHON" -m pip install cibuildwheel==2.23.3
+          echo "/opt/python-3.12/bin" >> "$GITHUB_PATH"
+          /opt/python-3.12/bin/python3.12 -m pip install cibuildwheel==2.23.3
 
       - name: Setup MSVC (32-bit)
         if: ${{ matrix.buildplat[1] == 'win32' }}
