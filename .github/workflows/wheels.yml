@@ -116,6 +116,7 @@ jobs:
         run: python3 -m cibuildwheel --output-dir wheelhouse
         env:
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
+          CIBW_TEST_COMMAND: "python -c \"import numpy; print(numpy.__version__); numpy.show_config()\""
 
       - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
