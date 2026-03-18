@@ -55,6 +55,13 @@ jobs:
           submodules: true
           persist-credentials: false
 
+      - name: Setup Python for riscv64
+        if: matrix.buildplat[1] == 'manylinux_riscv64'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 python3-pip python3-venv
+          echo "/usr/bin" >> "$GITHUB_PATH"
+
       - name: Setup MSVC (32-bit)
         if: ${{ matrix.buildplat[1] == 'win32' }}
         uses: bus1/cabuild/action/msdevshell@e22aba57d6e74891d059d66501b6b5aed8123c4d  # v1
