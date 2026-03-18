@@ -125,7 +125,7 @@ jobs:
 
       - name: Build wheels (riscv64)
         if: matrix.buildplat[1] == 'manylinux_riscv64'
-        run: cibuildwheel --output-dir wheelhouse
+        run: python3 -m cibuildwheel --output-dir wheelhouse
         env:
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
 
