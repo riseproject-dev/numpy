@@ -58,9 +58,8 @@ jobs:
       - name: Setup Python for riscv64
         if: matrix.buildplat[1] == 'manylinux_riscv64'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y python3 python3-pip python3-venv
-          echo "/usr/bin" >> "$GITHUB_PATH"
+          echo "/opt/python-3.12/bin" >> "$GITHUB_PATH"
+          /opt/python-3.12/bin/python3 -m pip install cibuildwheel==2.23.3
 
       - name: Setup MSVC (32-bit)
         if: ${{ matrix.buildplat[1] == 'win32' }}
@@ -107,7 +106,14 @@ jobs:
           fi
 
       - name: Build wheels
+        if: matrix.buildplat[1] != 'manylinux_riscv64'
         uses: pypa/cibuildwheel@ee02a1537ce3071a004a6b08c41e72f0fdc42d9a  # v3.4.0
+        env:
+          CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
+
+      - name: Build wheels (riscv64)
+        if: matrix.buildplat[1] == 'manylinux_riscv64'
+        run: cibuildwheel --output-dir wheelhouse
         env:
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
 
