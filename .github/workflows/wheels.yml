@@ -58,8 +58,15 @@ jobs:
       - name: Setup Python for riscv64
         if: matrix.buildplat[1] == 'manylinux_riscv64'
         run: |
-          echo "/opt/python-3.12/bin" >> "$GITHUB_PATH"
-          /opt/python-3.12/bin/python3 -m pip install cibuildwheel==2.23.3
+          # Find available Python in /opt
+          PYTHON_PATH=$(ls -d /opt/python-3.*/bin 2>/dev/null | sort -V | tail -1)
+          if [ -z "$PYTHON_PATH" ]; then
+            # Fallback to system Python
+            PYTHON_PATH=$(dirname $(which python3))
+          fi
+          echo "Using Python from: $PYTHON_PATH"
+          echo "$PYTHON_PATH" >> "$GITHUB_PATH"
+          "$PYTHON_PATH/python3" -m pip install cibuildwheel==2.23.3
 
       - name: Setup MSVC (32-bit)
         if: ${{ matrix.buildplat[1] == 'win32' }}
