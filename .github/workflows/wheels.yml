@@ -111,11 +111,29 @@ jobs:
         env:
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
 
+      - name: Restore ccache for riscv64
+        if: matrix.buildplat[1] == 'manylinux_riscv64'
+        uses: actions/cache@v4
+        with:
+          path: .ccache
+          key: ccache-riscv64-${{ matrix.python }}-${{ github.sha }}
+          restore-keys: |
+            ccache-riscv64-${{ matrix.python }}-
+
       - name: Build wheels (riscv64)
         if: matrix.buildplat[1] == 'manylinux_riscv64'
-        run: python3 -m cibuildwheel --output-dir wheelhouse
+        run: |
+          mkdir -p ${{ github.workspace }}/.ccache
+          python3 -m cibuildwheel --output-dir wheelhouse
         env:
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
+          CIBW_BEFORE_ALL_LINUX: >
+            yum install -y ccache || true &&
+            ln -sf $(which ccache) /usr/local/bin/gcc &&
+            ln -sf $(which ccache) /usr/local/bin/g++ &&
+            ln -sf $(which ccache) /usr/local/bin/cc &&
+            ln -sf $(which ccache) /usr/local/bin/c++
+          CIBW_CONTAINER_ENGINE: "docker; create_args: --volume=${{ github.workspace }}/.ccache:/root/.cache/ccache"
           CIBW_TEST_COMMAND: "python -c \"import numpy; print(numpy.__version__); numpy.show_config()\""
 
       - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
